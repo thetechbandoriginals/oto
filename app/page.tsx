@@ -34,7 +34,7 @@ export default function HomePage() {
 
       <section className="py-20 bg-primary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-white mb-16">Why Choose OTO?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-white mb-16">Why Choose Oto?</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="text-center border-2 border-white hover:border-white/80 transition-colors bg-transparent">
@@ -83,7 +83,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-left">
             {/* Section 1: Logo and Tagline */}
             <div className="space-y-4">
-              <Image src="/oto-logo.png" alt="OTO Logo" width={112} height={45} className="h-10 w-auto" priority />
+              <Image src="/oto-logo.png" alt="Oto Logo" width={112} height={45} className="h-10 w-auto" priority />
               <p className="text-sm text-muted-foreground">
                 Fast, secure car insurance for Kenya. Get covered in minutes.
               </p>
@@ -144,7 +144,7 @@ export default function HomePage() {
                   Cookie Notice
                 </Link>
               </div>
-              <p className="text-xs text-muted-foreground">© 2025 OTO.co.ke. All rights reserved.</p>
+              <p className="text-xs text-muted-foreground">© 2025 www.oto.co.ke. All rights reserved.</p>
             </div>
           </div>
         </div>
