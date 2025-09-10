@@ -29,11 +29,11 @@ const Badge = React.forwardRef<
 
   if (asChild) {
     return (
-      <Slot ref={ref} data-slot="badge" className={cn(badgeVariants({ variant }), className)} {...props} />
+      <Slot ref={ref as any} data-slot="badge" className={cn(badgeVariants({ variant }), className)} {...props} />
     )
   } 
 
-  return <span ref={ref} data-slot="badge" className={cn(badgeVariants({ variant }), className)} {...props} />
+  return <span ref={ref as any} data-slot="badge" className={cn(badgeVariants({ variant }), className)} {...props} />
 })
 
 Badge.displayName = "Badge"
