@@ -126,6 +126,7 @@ export default function HomePage() {
 
             {/* Section 4: Legal */}
             <div className="space-y-4">
+              <h4 className="font-semibold text-foreground">Links</h4>
               <div className="space-y-2">
                 <Link href="#" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
                   Privacy Policy

@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-
+import Image from "next/image"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -68,7 +68,9 @@ export default function LoginPage() {
 
         <Card className="border-2 border-primary/20">
           <CardHeader className="text-center">
-            <div className="text-3xl font-bold text-primary mb-2">OTO</div>
+            <div className="flex justify-center mb-4">
+              <Image src="/oto-logo.png" alt="OTO Logo" width={112} height={45} className="h-12 w-auto" priority />
+            </div>
             <CardTitle className="text-2xl font-bold text-foreground">
               {isLogin ? "Welcome Back" : "Create Account"}
             </CardTitle>

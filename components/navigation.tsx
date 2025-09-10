@@ -39,14 +39,18 @@ export function Navigation() {
                 </Button>
               </>
             ) : (
-              <>
-                <Link href="/login" className="text-red-600 hover:text-red-700 font-medium transition-colors">
-                  Login
-                </Link>
+              <div className="flex items-center space-x-2">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="text-black border-black hover:bg-black hover:text-white bg-transparent"
+                >
+                  <Link href="/login">Login</Link>
+                </Button>
                 <Button asChild className="bg-primary text-white hover:bg-primary/90">
                   <Link href="/login">Get Started</Link>
                 </Button>
-              </>
+              </div>
             )}
           </div>
 
@@ -91,20 +95,22 @@ export function Navigation() {
                   </Button>
                 </>
               ) : (
-                <>
-                  <Link
-                    href="/login"
-                    className="text-red-600 hover:text-red-700 font-medium transition-colors"
-                    onClick={() => setIsMenuOpen(false)}
+                <div className="flex flex-col space-y-2">
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="text-black border-black hover:bg-black hover:text-white w-fit bg-transparent"
                   >
-                    Login
-                  </Link>
+                    <Link href="/login" onClick={() => setIsMenuOpen(false)}>
+                      Login
+                    </Link>
+                  </Button>
                   <Button asChild className="bg-primary text-white hover:bg-primary/90 w-fit">
                     <Link href="/login" onClick={() => setIsMenuOpen(false)}>
                       Get Started
                     </Link>
                   </Button>
-                </>
+                </div>
               )}
             </div>
           </div>

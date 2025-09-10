@@ -130,7 +130,7 @@ export function InsuranceForm() {
       newErrors.phoneNumber = "Invalid phone number format (e.g., 0712345678)"
     if (!formData.email.includes("@")) newErrors.email = "Valid email is required"
     if (!formData.idNumber.match(/^\d{8}$/)) newErrors.idNumber = "ID number must be 8 digits"
-    if (!formData.kraPin.match(/^P0\d{9}[A-Z]$/)) newErrors.kraPin = "Invalid KRA PIN format (e.g., P012345678A)"
+    if (!formData.kraPin.match(/^P\d{9}[A-Z]$/)) newErrors.kraPin = "Invalid KRA PIN format (e.g., P051234567M)"
     if (!formData.address.trim()) newErrors.address = "Address is required"
 
     setErrors(newErrors)
@@ -289,7 +289,7 @@ export function InsuranceForm() {
                     value={formData.kraPin}
                     onChange={(e) => updateFormData("kraPin", e.target.value)}
                     className={errors.kraPin ? "border-destructive" : ""}
-                    placeholder="P012345678A"
+                    placeholder="P051234567M"
                   />
                   {errors.kraPin && <p className="text-sm text-destructive">{errors.kraPin}</p>}
                 </div>
