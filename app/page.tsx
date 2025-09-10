@@ -25,7 +25,7 @@ export default function HomePage() {
             </div>
 
             {/* Form - Now below title and description */}
-            <div className="w-[80%]">
+            <div className="w-full md:w-[80%]">
               <InsuranceForm />
             </div>
           </div>
