@@ -93,14 +93,17 @@ export default function HomePage() {
             <div className="space-y-4">
               <h4 className="font-semibold text-foreground">Help</h4>
               <div className="space-y-2">
-                <Link href="#" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link href="/help" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
                   Need Help?
                 </Link>
-                <Link href="#" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="/help#faqs"
+                  className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   FAQs
                 </Link>
                 <Link
-                  href="#contact"
+                  href="/contact"
                   className="block text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   Contacts
@@ -128,10 +131,16 @@ export default function HomePage() {
             <div className="space-y-4">
               <h4 className="font-semibold text-foreground">Links</h4>
               <div className="space-y-2">
-                <Link href="#" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="/privacy"
+                  className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Privacy Policy
                 </Link>
-                <Link href="#" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="/cookies"
+                  className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Cookie Notice
                 </Link>
               </div>
