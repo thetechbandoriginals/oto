@@ -20,7 +20,7 @@ export default function HomePage() {
                 <span className="text-primary">3 Simple Steps</span>
               </h1>
               <p className="text-sm md:text-base text-muted-foreground leading-relaxed text-pretty max-w-4xl mx-auto">
-                Your Details, Vehicle Details, Choose Insurance then Pay via M-Pesa Fast & Secure
+                Enter Your Details, Vehicle Details, Choose Insurance then Pay via M-Pesa. Already have an account?<Link href='/login' className="underline text-primary"> Log In</Link>. Or Continue with the form below.
               </p>
             </div>
 
