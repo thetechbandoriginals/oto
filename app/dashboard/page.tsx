@@ -1,4 +1,5 @@
 import { Navigation } from "@/components/navigation"
+import { Footer } from "@/components/footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -198,7 +199,7 @@ export default function DashboardPage() {
                       </CardHeader>
 
                       <CardContent className="space-y-3">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
                           <div>
                             <p className="text-muted-foreground">Make & Model</p>
                             <p className="font-medium text-foreground">
@@ -277,6 +278,8 @@ export default function DashboardPage() {
           </Card>
         </div>
       </div>
+
+      <Footer />
     </div>
   )
 }

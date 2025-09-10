@@ -26,7 +26,10 @@ export function Navigation() {
               Need Help?
             </Link>
             {user ? (
-              <>
+              <div className="flex items-center space-x-2">
+                <Button asChild className="bg-primary text-white hover:bg-primary/90">
+                  <Link href="/dashboard">Dashboard</Link>
+                </Button>
                 <Button
                   variant="outline"
                   onClick={logout}
@@ -34,10 +37,7 @@ export function Navigation() {
                 >
                   Logout
                 </Button>
-                <Button asChild className="bg-primary text-white hover:bg-primary/90">
-                  <Link href="/dashboard">Dashboard</Link>
-                </Button>
-              </>
+              </div>
             ) : (
               <div className="flex items-center space-x-2">
                 <Button
@@ -77,7 +77,12 @@ export function Navigation() {
                 Need Help?
               </Link>
               {user ? (
-                <>
+                <div className="flex flex-col space-y-2">
+                  <Button asChild className="bg-primary text-white hover:bg-primary/90 w-fit">
+                    <Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>
+                      Dashboard
+                    </Link>
+                  </Button>
                   <Button
                     variant="outline"
                     onClick={() => {
@@ -88,12 +93,7 @@ export function Navigation() {
                   >
                     Logout
                   </Button>
-                  <Button asChild className="bg-primary text-white hover:bg-primary/90 w-fit">
-                    <Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>
-                      Dashboard
-                    </Link>
-                  </Button>
-                </>
+                </div>
               ) : (
                 <div className="flex flex-col space-y-2">
                   <Button

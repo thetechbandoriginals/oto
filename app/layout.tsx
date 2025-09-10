@@ -5,6 +5,8 @@ import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
 import { AuthProvider } from "@/components/auth-context"
+import { ScrollToTop } from "@/components/scroll-to-top"
+import { CookieNotice } from "@/components/cookie-notice"
 import "./globals.css"
 
 const manrope = Manrope({
@@ -21,7 +23,7 @@ export const metadata: Metadata = {
   generator: "v0.app",
   icons: {
     icon: "/favicon.ico",
-  }
+  },
 }
 
 export default function RootLayout({
@@ -36,7 +38,9 @@ export default function RootLayout({
       </head>
       <body className={`font-sans ${manrope.variable} ${GeistMono.variable}`}>
         <AuthProvider>
+          <ScrollToTop />
           <Suspense fallback={null}>{children}</Suspense>
+          <CookieNotice />
         </AuthProvider>
         <Analytics />
       </body>
