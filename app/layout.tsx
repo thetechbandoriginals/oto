@@ -19,6 +19,9 @@ export const metadata: Metadata = {
     "OTO is your one-stop app for Kenyan drivers. Register vehicles, buy affordable insurance covers via Insurepal, view policies in your dashboard, shop spares, and sell cars. Fast, secure, M-Pesa ready.",
   keywords: "vehicle registration Kenya, car insurance, motor insurance, oto app, Insurepal",
   generator: "v0.app",
+  icons: {
+    icon: "/favicon.ico",
+  }
 }
 
 export default function RootLayout({
