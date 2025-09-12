@@ -11,6 +11,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Loader2, Upload, X } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { useAppContext } from "@/contexts/app-context"
+import { INSURANCE_CLASS, INSURANCE_TYPE } from "@/utils/types"
+import axios from "axios"
+import { INSUREPAL_API } from "@/config"
+import { useSnackbar } from "notistack"
+import { axiosHandler } from "@/hooks/useAxios"
+import { PERCENTAGE_PRICE_INCREASE } from "@/utils/data"
 
 const carMakes = [
   "Acura",
@@ -73,121 +80,68 @@ const carMakes = [
 ]
 
 const bodyTypes = ["Sedan", "Hatchback", "SUV", "Pickup", "Other"]
-const insuranceCompanies = [
-  "Jubilee Insurance",
-  "CIC Insurance",
-  "APA Insurance",
-  "Britam Insurance",
-  "UAP Insurance",
-  "ICEA LION",
-  "Madison Insurance",
-  "Kenindia Assurance",
-  "Heritage Insurance",
-  "Takaful Insurance",
-]
 
-const insuranceTypes = ["Comprehensive (Comp)", "Time On Risk (TOR)", "Third Party Only (TPO)"]
+const oneDay = 1000 * 60 * 60 * 24;
 
-const insuranceClasses = [
-  "MOTOR PRIVATE",
-  "MOTOR COMMERCIAL",
-  "MOTOR CYCLE (PRIVATE)",
-  "MOTOR CYCLE (COMMERCIAL)",
-  "MOTOR CYCLE (BODABODA)",
-  "MOTOR TRACTORS",
-  "MOTOR (P.S.V) CHAUFFEUR DRIVEN",
-  "MOTOR (P.S.V) TAXI",
-  "MOTOR COMMERCIAL (INSTITUTION)",
-  "MOTOR ASSET INSURANCE",
-  "MOTOR PSV MATATU",
-  "MOTOR PSV BUSES",
-]
-
-const oneDay = 1000 * 60 * 60 * 24
-
-const getWeekDate = (startDate: string) => {
-  const date = new Date(startDate)
-  return new Date(date.getTime() + 7 * oneDay - oneDay)
+const getWeekDate = (stDate: Date) => {
+  const weekMilliseconds = 1000 * 60 * 60 * 24 * 7;
+  const future = new Date(stDate).getTime() + weekMilliseconds - oneDay;
+  return new Date(future);
+};
+const getTwoWeeksDate = (stDate: Date) => {
+  const twoWeeksMilliseconds = 1000 * 60 * 60 * 24 * 7 * 2;
+  const future = new Date(stDate).getTime() + twoWeeksMilliseconds - oneDay;
+  return new Date(future);
 }
+const getMonthDate = (stDate: Date) => new Date(new Date(stDate).getTime() - oneDay).setMonth((new Date(new Date(stDate).getTime() - oneDay).getMonth() + 1))
+const getSixMonthDate = (stDate: Date) => new Date(new Date(stDate).getTime() - oneDay).setMonth((new Date(new Date(stDate).getTime() - oneDay).getMonth() + 6))
+const getTenMonths = (stDate: Date) => new Date(new Date(stDate).getTime() - oneDay).setMonth((new Date(new Date(stDate).getTime() - oneDay).getMonth() + 10))
+const getElevenMonths = (stDate: Date) => new Date(new Date(stDate).getTime() - oneDay).setMonth((new Date(new Date(stDate).getTime() - oneDay).getMonth() + 11))
+const getYearDate = (stDate: Date) => new Date(new Date(stDate).getTime() - oneDay).setFullYear((new Date(new Date(stDate).getTime() - oneDay).getFullYear() + 1))
 
-const getTwoWeeksDate = (startDate: string) => {
-  const date = new Date(startDate)
-  return new Date(date.getTime() + 14 * oneDay - oneDay)
-}
+// const getFrequencyOptions = (insuranceType: string, insuranceClass: string) => {
+//   if (insuranceType === "Time On Risk (TOR)") {
+//     return ["Monthly", "After Two Weeks"]
+//   }
 
-const getMonthDate = (startDate: string) => {
-  const date = new Date(startDate)
-  const newDate = new Date(date.getTime() - oneDay)
-  return new Date(newDate.setMonth(newDate.getMonth() + 1))
-}
+//   if (insuranceType === "Comprehensive (Comp)") {
+//     if (insuranceClass === "MOTOR CYCLE (BODABODA)") {
+//       return ["Monthly", "Annually", "After Six Months"]
+//     }
+//     return ["Monthly", "Annually", "After Two Weeks", "After Six Months"]
+//   }
 
-const getSixMonthDate = (startDate: string) => {
-  const date = new Date(startDate)
-  const newDate = new Date(date.getTime() - oneDay)
-  return new Date(newDate.setMonth(newDate.getMonth() + 6))
-}
+//   if (insuranceType === "Third Party Only (TPO)") {
+//     if (insuranceClass === "MOTOR CYCLE (BODABODA)") {
+//       return ["Monthly", "Annually", "After Six Months"]
+//     }
+//     if (insuranceClass === "MOTOR PSV MATATU") {
+//       return ["Weekly", "After Two Weeks", "Monthly"]
+//     }
+//     if (insuranceClass === "MOTOR PSV BUSES") {
+//       return ["Monthly"]
+//     }
+//     return ["Monthly", "Annually", "After Two Weeks", "After Six Months"]
+//   }
 
-const getYearDate = (startDate: string) => {
-  const date = new Date(startDate)
-  const newDate = new Date(date.getTime() - oneDay)
-  return new Date(newDate.setFullYear(newDate.getFullYear() + 1))
-}
+//   return ["Monthly", "After Two Weeks", "After Six Months", "Annually"]
+// }
 
-const getElevenMonths = (startDate: string) => {
-  const date = new Date(startDate)
-  const newDate = new Date(date.getTime() - oneDay)
-  return new Date(newDate.setMonth(newDate.getMonth() + 11))
-}
+// const getAvailableClasses = (insuranceType: string) => {
+//   if (insuranceType === "Time On Risk (TOR)") {
+//     return insuranceClasses.slice(0, 2) // First 2 classes only
+//   }
 
-const getTenMonths = (startDate: string) => {
-  const date = new Date(startDate)
-  const newDate = new Date(date.getTime() - oneDay)
-  return new Date(newDate.setMonth(newDate.getMonth() + 10))
-}
+//   if (insuranceType === "Comprehensive (Comp)") {
+//     return insuranceClasses.slice(0, 10) // First 10 classes
+//   }
 
-const getFrequencyOptions = (insuranceType: string, insuranceClass: string) => {
-  if (insuranceType === "Time On Risk (TOR)") {
-    return ["Monthly", "After Two Weeks"]
-  }
+//   if (insuranceType === "Third Party Only (TPO)") {
+//     return insuranceClasses // All 12 classes
+//   }
 
-  if (insuranceType === "Comprehensive (Comp)") {
-    if (insuranceClass === "MOTOR CYCLE (BODABODA)") {
-      return ["Monthly", "Annually", "After Six Months"]
-    }
-    return ["Monthly", "Annually", "After Two Weeks", "After Six Months"]
-  }
-
-  if (insuranceType === "Third Party Only (TPO)") {
-    if (insuranceClass === "MOTOR CYCLE (BODABODA)") {
-      return ["Monthly", "Annually", "After Six Months"]
-    }
-    if (insuranceClass === "MOTOR PSV MATATU") {
-      return ["Weekly", "After Two Weeks", "Monthly"]
-    }
-    if (insuranceClass === "MOTOR PSV BUSES") {
-      return ["Monthly"]
-    }
-    return ["Monthly", "Annually", "After Two Weeks", "After Six Months"]
-  }
-
-  return ["Monthly", "After Two Weeks", "After Six Months", "Annually"]
-}
-
-const getAvailableClasses = (insuranceType: string) => {
-  if (insuranceType === "Time On Risk (TOR)") {
-    return insuranceClasses.slice(0, 2) // First 2 classes only
-  }
-
-  if (insuranceType === "Comprehensive (Comp)") {
-    return insuranceClasses.slice(0, 10) // First 10 classes
-  }
-
-  if (insuranceType === "Third Party Only (TPO)") {
-    return insuranceClasses // All 12 classes
-  }
-
-  return []
-}
+//   return []
+// }
 
 const mockClients = [
   {
@@ -246,14 +200,19 @@ interface FormData {
   frequency: string
   insuredValue: string
   numberOfSeats: string
-  startDate: string
-  endDate: string
+  startDate: string;
+  endDate: string;
   additionalDetails: string
   price: string
   documents: File[]
 }
 
 export function InsuranceForm() {
+
+  const { enqueueSnackbar } = useSnackbar()
+
+  const { insuranceClasses, insuranceCompanies, insuranceTypes } = useAppContext();
+
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
@@ -277,138 +236,92 @@ export function InsuranceForm() {
     frequency: "",
     insuredValue: "",
     numberOfSeats: "",
-    startDate: "",
-    endDate: "",
+    startDate: '',
+    endDate: '',
     additionalDetails: "",
     price: "",
     documents: [],
   })
-  const [errors, setErrors] = useState<Partial<FormData>>({})
+  const [errors, setErrors] = useState<any>({})
   const [availableClasses, setAvailableClasses] = useState<string[]>([])
   const [frequencyOptions, setFrequencyOptions] = useState<string[]>([])
   const [showSeatsField, setShowSeatsField] = useState(false)
   const [showInsuredValueField, setShowInsuredValueField] = useState(false)
-  const [clientSuggestions, setClientSuggestions] = useState<typeof mockClients>([])
-  const [showSuggestions, setShowSuggestions] = useState(false)
   const [isCalculatingPrice, setIsCalculatingPrice] = useState(false)
-  const [priceCalculated, setPriceCalculated] = useState(false)
+  const [priceCalculated, setPriceCalculated] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [filteredInsuranceTypes, setFilteredInsuranceTypes] = useState<INSURANCE_TYPE[]>([]);
+  const [filteredInsuranceClasses, setFilteredInsuranceClasses] = useState<INSURANCE_CLASS[]>([]);
+
   const router = useRouter()
 
   useEffect(() => {
+    if (formData.insuranceCompany) {
+      const filteredTypes = insuranceTypes.filter(each => each.insuranceCompany === formData.insuranceCompany);
+      setFilteredInsuranceTypes(filteredTypes);
+    }
+  }, [formData.insuranceCompany, insuranceTypes]);
+
+  useEffect(() => {
     if (formData.insuranceType) {
-      const classes = getAvailableClasses(formData.insuranceType)
-      setAvailableClasses(classes)
+      const theClasses = insuranceClasses.filter(each => each.insuranceType === formData.insuranceType);
+      setFilteredInsuranceClasses(theClasses);
 
-      if (!classes.includes(formData.insuranceClass)) {
-        updateFormData("insuranceClass", "")
-        updateFormData("frequency", "")
-      }
+      const foundType = insuranceTypes.find(each => each._id === formData.insuranceType);
+      if (foundType && foundType.name.toLowerCase().includes('comprehensive')) {
+        setShowInsuredValueField(true)
+      } else {
+        setShowInsuredValueField(false);
+      };
     }
-  }, [formData.insuranceType])
+  }, [formData.insuranceType, insuranceClasses, insuranceTypes])
 
   useEffect(() => {
-    if (formData.insuranceType && formData.insuranceClass) {
-      const options = getFrequencyOptions(formData.insuranceType, formData.insuranceClass)
-      setFrequencyOptions(options)
-
-      if (!options.includes(formData.frequency)) {
-        updateFormData("frequency", "")
-      }
-
-      const needsSeats =
-        formData.insuranceClass.includes("PSV") ||
-        formData.insuranceClass.includes("MATATU") ||
-        formData.insuranceClass.includes("BUSES")
-      setShowSeatsField(needsSeats)
+    const foundClass = insuranceClasses.find(each => each._id === formData.insuranceClass);
+    if (foundClass) {
+      const ise = (foundClass.name.includes('CHAUFFEUR') || foundClass.name.includes('TAXI') || foundClass.name.includes('INSTITUTION'));
+      setShowSeatsField(ise);
     }
-  }, [formData.insuranceType, formData.insuranceClass])
+  }, [insuranceClasses, formData.insuranceClass])
 
   useEffect(() => {
-    if (formData.startDate && formData.frequency) {
-      let custEndDate = formData.endDate
-      const setFrequency = formData.frequency
-
-      if (setFrequency === "Weekly") {
-        custEndDate = getWeekDate(formData.startDate).toISOString().split("T")[0]
-      } else if (setFrequency === "After Two Weeks") {
-        custEndDate = getTwoWeeksDate(formData.startDate).toISOString().split("T")[0]
-      } else if (setFrequency === "Annually") {
-        custEndDate = getYearDate(formData.startDate).toISOString().split("T")[0]
-      } else if (setFrequency === "Monthly") {
-        custEndDate = getMonthDate(formData.startDate).toISOString().split("T")[0]
-      } else if (setFrequency === "restAfterFirst") {
-        custEndDate = getElevenMonths(formData.startDate).toISOString().split("T")[0]
-      } else if (setFrequency === "restAfterSecond") {
-        custEndDate = getTenMonths(formData.startDate).toISOString().split("T")[0]
-      } else if (setFrequency === "After Six Months") {
-        custEndDate = getSixMonthDate(formData.startDate).toISOString().split("T")[0]
-      }
-
-      setFormData((prev) => ({ ...prev, endDate: custEndDate }))
+    if (formData.startDate) {
+      let custEndDate = new Date(formData.endDate);
+      const setFrequency = formData.frequency;
+      if (setFrequency === 'weekly') custEndDate = new Date(getWeekDate(new Date(formData.startDate)));
+      else if (setFrequency === 'twoWeeks') custEndDate = new Date(getTwoWeeksDate(new Date(formData.startDate)));
+      else if (setFrequency === 'annual') custEndDate = new Date(getYearDate(new Date(formData.startDate)));
+      else if (setFrequency === 'monthly') custEndDate = new Date(getMonthDate(new Date(formData.startDate)));
+      else if (setFrequency === 'restAfterFirst') custEndDate = new Date(getElevenMonths(new Date(formData.startDate)))
+      else if (setFrequency === 'restAfterSecond') custEndDate = new Date(getTenMonths(new Date(formData.startDate)))
+      else custEndDate = new Date(getSixMonthDate(new Date(formData.startDate)));
+      // Format date as yyyy-mm-dd
+      const year = custEndDate.getFullYear();
+      const month = String(custEndDate.getMonth() + 1).padStart(2, "0");
+      const day = String(custEndDate.getDate()).padStart(2, "0");
+      const formattedEndDate = `${year}-${month}-${day}`;
+      updateFormData('endDate', formattedEndDate);
     }
+    //  eslint-disable-next-line
   }, [formData.frequency, formData.startDate])
 
-  useEffect(() => {
-    const showValue = formData.insuranceType.toLowerCase().includes("comprehensive")
-    setShowInsuredValueField(showValue)
-
-    if (!showValue) {
-      updateFormData("insuredValue", "")
-    }
-  }, [formData.insuranceType])
-
-  const handleClientSearch = (searchTerm: string) => {
-    updateFormData("fullName", searchTerm)
-
-    if (searchTerm.length > 2) {
-      const filtered = mockClients.filter(
-        (client) =>
-          client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          client.phone.includes(searchTerm) ||
-          client.idNumber.includes(searchTerm),
-      )
-      setClientSuggestions(filtered)
-      setShowSuggestions(filtered.length > 0)
-    } else {
-      setShowSuggestions(false)
-    }
-  }
-
-  const selectClient = (client: (typeof mockClients)[0]) => {
-    updateFormData("fullName", client.name)
-    updateFormData("phoneNumber", client.phone)
-    updateFormData("email", client.email)
-    updateFormData("idNumber", client.idNumber)
-    updateFormData("kraPin", client.kraPin)
-    updateFormData("address", client.address)
-    setShowSuggestions(false)
-  }
-
   const calculatePrice = async () => {
-    if (
-      !formData.insuranceClass ||
-      (!formData.insuredValue && showInsuredValueField) ||
-      (showSeatsField && !formData.numberOfSeats)
-    ) {
-      return
-    }
-
-    setIsCalculatingPrice(true)
-
-    // Mock API call for price calculation
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000)) // Simulate API delay
-
-      // Mock price calculation logic
-      let basePrice = 15000
-      if (formData.insuranceType.includes("Comprehensive")) basePrice *= 2.5
-      if (formData.insuranceClass.includes("COMMERCIAL")) basePrice *= 1.5
-      if (formData.insuranceClass.includes("PSV")) basePrice *= 2
-      if (formData.insuredValue) basePrice += Number(formData.insuredValue) * 0.02
-      if (formData.numberOfSeats) basePrice += Number(formData.numberOfSeats) * 500
-
-      updateFormData("price", Math.round(basePrice).toString())
-      setPriceCalculated(true)
+      setIsCalculatingPrice(true)
+      if (formData.insuranceClass && (formData.frequency || formData.numberOfSeats || formData.insuredValue)) {
+        const submitForm = {
+          insuranceClass: formData.insuranceClass,
+          details: {
+            frequency: formData.frequency,
+            value: formData.insuredValue,
+            seats: formData.numberOfSeats
+          }
+        }
+        const response = await axios.post(`${INSUREPAL_API}/auth/calculate-price`, submitForm);
+        updateFormData("price", Number(+(response.data.price || 0) * ((100 + PERCENTAGE_PRICE_INCREASE ) / 100)).toString())
+        setPriceCalculated(true)
+      }
     } catch (error) {
       console.error("Price calculation failed:", error)
     } finally {
@@ -417,17 +330,9 @@ export function InsuranceForm() {
   }
 
   useEffect(() => {
-    if (
-      formData.insuranceClass &&
-      (formData.insuredValue || !showInsuredValueField) &&
-      (formData.numberOfSeats || !showSeatsField)
-    ) {
-      calculatePrice()
-    } else {
-      setPriceCalculated(false)
-      updateFormData("price", "")
-    }
-  }, [formData.insuranceClass, formData.insuredValue, formData.numberOfSeats])
+    calculatePrice();
+    //  eslint-disable-next-line
+  }, [formData.frequency, formData.numberOfSeats, formData.insuredValue, formData.insuranceClass]);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || [])
@@ -449,7 +354,7 @@ export function InsuranceForm() {
       newErrors.phoneNumber = "Invalid phone number format (e.g., 0712345678)"
     if (!formData.email.includes("@")) newErrors.email = "Valid email is required"
     if (!formData.idNumber.match(/^\d{8}$/)) newErrors.idNumber = "ID number must be 8 digits"
-    if (!formData.kraPin.match(/^P\d{9}[A-Z]$/)) newErrors.kraPin = "Invalid KRA PIN format (e.g., P051234567M)"
+    if (!formData.kraPin.match(/^[A-Za-z][0-9]{9}[A-Za-z]$/)) newErrors.kraPin = "Invalid KRA PIN format (e.g., P051234567M)"
     if (!formData.address.trim()) newErrors.address = "Address is required"
 
     setErrors(newErrors)
@@ -483,18 +388,34 @@ export function InsuranceForm() {
     if (!formData.frequency) newErrors.frequency = "Payment frequency is required"
     if (showInsuredValueField && (!formData.insuredValue || Number(formData.insuredValue) <= 0))
       newErrors.insuredValue = "Valid insured value is required"
-    if (
-      showSeatsField &&
-      (!formData.numberOfSeats || Number(formData.numberOfSeats) < 7 || Number(formData.numberOfSeats) > 65)
-    ) {
-      newErrors.numberOfSeats = "Number of seats must be between 7 and 65"
+    if (showSeatsField && !formData.numberOfSeats) {
+      newErrors.numberOfSeats = "Number of seats is required"
     }
-    if (!formData.startDate) newErrors.startDate = "Start date is required"
-    if (!formData.endDate) newErrors.endDate = "End date is required"
+    // if (!formData.startDate) newErrors.startDate = "Start date is required"
+    // if (!formData.endDate) newErrors.endDate = "End date is required"
     if (!priceCalculated || !formData.price) newErrors.price = "Price calculation is required"
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
+  }
+
+  const submitHandler = async () => {
+    try {
+      setIsSubmitting(true);
+      const request = axiosHandler();
+      const response = await request({
+        method: 'post',
+        path: '/policy/create',
+        pathData: formData
+      });
+      enqueueSnackbar(response.data.message, { variant: 'success' });
+      router.push('/dashboard')
+    } catch (err: any) {
+      const errorMessage = err?.response?.data?.content || err?.response?.data?.message || err?.message || err;
+      enqueueSnackbar(errorMessage, { variant: "error" })
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   const handleNext = () => {
@@ -508,8 +429,7 @@ export function InsuranceForm() {
       if (currentStep < 3) {
         setCurrentStep(currentStep + 1)
       } else {
-        alert("Submitted! Redirecting to payment...")
-        router.push("/dashboard")
+        submitHandler()
       }
     }
   }
@@ -520,14 +440,14 @@ export function InsuranceForm() {
     }
   }
 
-  const updateFormData = (field: keyof FormData, value: string) => {
+  const updateFormData = (field: keyof FormData, value: string | Date) => {
     setFormData((prev) => {
       const updated = { ...prev, [field]: value }
       return updated
     })
 
     if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }))
+      setErrors((prev: any) => ({ ...prev, [field]: undefined }))
     }
   }
 
@@ -557,26 +477,10 @@ export function InsuranceForm() {
                   <Input
                     id="fullName"
                     value={formData.fullName}
-                    onChange={(e) => handleClientSearch(e.target.value)}
+                    onChange={(e) => updateFormData("fullName", e.target.value)}
                     className={errors.fullName ? "border-destructive" : ""}
-                    placeholder="Search existing clients..."
+                    placeholder="Enter name..."
                   />
-                  {showSuggestions && (
-                    <div className="absolute top-full left-0 right-0 z-10 bg-white border border-gray-200 rounded-md shadow-lg max-h-40 overflow-y-auto">
-                      {clientSuggestions.map((client) => (
-                        <div
-                          key={client.id}
-                          className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
-                          onClick={() => selectClient(client)}
-                        >
-                          <div className="font-medium">{client.name}</div>
-                          <div className="text-gray-500">
-                            {client.phone} • {client.idNumber}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
                   {errors.fullName && <p className="text-sm text-destructive">{errors.fullName}</p>}
                 </div>
 
@@ -790,8 +694,8 @@ export function InsuranceForm() {
                   </SelectTrigger>
                   <SelectContent>
                     {insuranceCompanies.map((company) => (
-                      <SelectItem key={company} value={company}>
-                        {company}
+                      <SelectItem key={company._id} value={company._id}>
+                        {company.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -809,9 +713,9 @@ export function InsuranceForm() {
                     <SelectValue placeholder="Select insurance type" />
                   </SelectTrigger>
                   <SelectContent>
-                    {insuranceTypes.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
+                    {filteredInsuranceTypes.filter(each => !each.name.toLowerCase().includes('comprehensive')).map((type) => (
+                      <SelectItem key={type._id} value={type._id}>
+                        {type.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -830,9 +734,9 @@ export function InsuranceForm() {
                     <SelectValue placeholder="Select insurance class" />
                   </SelectTrigger>
                   <SelectContent>
-                    {availableClasses.map((cls) => (
-                      <SelectItem key={cls} value={cls}>
-                        {cls}
+                    {filteredInsuranceClasses.map((cls) => (
+                      <SelectItem key={cls._id} value={cls._id}>
+                        {cls.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -853,11 +757,26 @@ export function InsuranceForm() {
                     <SelectValue placeholder="Select frequency" />
                   </SelectTrigger>
                   <SelectContent>
-                    {frequencyOptions.map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
+                    <SelectItem 
+                      disabled={!insuranceClasses.find(each => each._id === formData.insuranceClass)?.details.extensions.includes('weekly')} 
+                      value='weekly'
+                    >Weekly</SelectItem>
+                    <SelectItem 
+                      disabled={!insuranceClasses.find(each => each._id === formData.insuranceClass)?.details.extensions.includes('twoWeeks')} 
+                      value='twoWeeks'
+                    >After Two Weeks</SelectItem>
+                    <SelectItem 
+                      disabled={!insuranceClasses.find(each => each._id === formData.insuranceClass)?.details.extensions.includes('monthly')} 
+                      value='monthly'
+                    >Monthly</SelectItem>
+                    <SelectItem 
+                      disabled={!insuranceClasses.find(each => each._id === formData.insuranceClass)?.details.extensions.includes('halfAnnual')} 
+                      value='halfAnnual'
+                    >After Six Months</SelectItem>
+                    <SelectItem 
+                      disabled={!insuranceClasses.find(each => each._id === formData.insuranceClass)?.details.extensions.includes('annual')} 
+                      value='annual'
+                    >Annually</SelectItem>
                   </SelectContent>
                 </Select>
                 {errors.frequency && <p className="text-sm text-destructive">{errors.frequency}</p>}
@@ -879,7 +798,7 @@ export function InsuranceForm() {
                 </div>
               )}
 
-              <div className="space-y-2">
+              {showSeatsField && <div className="space-y-2">
                 <Label htmlFor="numberOfSeats">Number of Seats *</Label>
                 <Input
                   id="numberOfSeats"
@@ -892,7 +811,7 @@ export function InsuranceForm() {
                   className={errors.numberOfSeats ? "border-destructive" : ""}
                 />
                 {errors.numberOfSeats && <p className="text-sm text-destructive">{errors.numberOfSeats}</p>}
-              </div>
+              </div>}
 
               <div className="space-y-2">
                 <Label htmlFor="startDate">Start Date *</Label>
@@ -913,6 +832,7 @@ export function InsuranceForm() {
                   id="endDate"
                   type="date"
                   value={formData.endDate}
+                  disabled
                   onChange={(e) => updateFormData("endDate", e.target.value)}
                   className={errors.endDate ? "border-destructive" : ""}
                 />
@@ -935,7 +855,7 @@ export function InsuranceForm() {
                 {errors.price && <p className="text-sm text-destructive">{errors.price}</p>}
               </div>
 
-              <div className="space-y-2 md:col-span-2">
+              {/* <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="documents">Upload Documents (Optional)</Label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
                   <input
@@ -966,18 +886,18 @@ export function InsuranceForm() {
                     ))}
                   </div>
                 )}
-              </div>
+              </div> */}
             </div>
 
             <div className="flex gap-4">
               <Button variant="outline" onClick={handleBack} className="flex-1 bg-transparent">
                 Back
               </Button>
-              <Button onClick={handleNext} className="flex-1" disabled={isCalculatingPrice || !priceCalculated}>
-                {isCalculatingPrice ? (
+              <Button onClick={handleNext} className="flex-1" disabled={isSubmitting || isCalculatingPrice || !priceCalculated}>
+                {(isSubmitting || isCalculatingPrice) ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Calculating...
+                    {isSubmitting ? "Submitting..." : "Calculating..."}
                   </>
                 ) : (
                   "Purchase & Get Policy"

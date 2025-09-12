@@ -1,36 +1,14 @@
+'use client'
+
 import { Navigation } from "@/components/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { CheckCircle, XCircle, Download, Eye, RotateCcw, Plus, Car, FileText } from "lucide-react"
+import { Eye, Plus, Car, FileText } from "lucide-react"
 import Link from "next/link"
-
-// Dummy data
-const userData = {
-  name: "John Doe",
-  phone: "0712345678",
-  email: "john@example.com",
-  idNumber: "xxxx5678",
-  kraPin: "xxxx5678X",
-  address: "Nairobi CBD",
-}
-
-const policies = [
-  {
-    policyNumber: "POL12345",
-    vehicle: {
-      regNo: "KAA 123A",
-      make: "Toyota",
-      model: "Corolla",
-    },
-    insuranceClass: "Private Car (Comprehensive)",
-    paid: true,
-    startDate: "2025-10-01",
-    endDate: "2026-10-01",
-    price: 25000,
-    document: "https://dummyurl.com/policy12345.pdf",
-  },
-]
+import useClientUser from "@/hooks/useClientUser"
+import { useAppContext } from "@/contexts/app-context"
+import { useEffect } from "react"
+import SingleDashboardPolicy from "@/components/single-dashboard-policy"
 
 const vehicles = [
   {
@@ -43,6 +21,14 @@ const vehicles = [
 ]
 
 export default function DashboardPage() {
+
+  const user = useClientUser();
+  const { policies, getPolicies } = useAppContext();
+
+  useEffect(() => {
+    getPolicies();
+  }, [])
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -53,7 +39,7 @@ export default function DashboardPage() {
           <div className="mb-8">
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Your OTO Dashboard</h1>
             <p className="text-lg text-muted-foreground">
-              Hello, {userData.name}! Manage your vehicles and policies here.
+              Hello, {user?.name}! Manage your vehicles and policies here.
             </p>
           </div>
 
@@ -100,65 +86,7 @@ export default function DashboardPage() {
               {policies.length > 0 ? (
                 <div className="space-y-4">
                   {policies.map((policy) => (
-                    <Card key={policy.policyNumber} className="border-2 border-primary/20">
-                      <CardHeader>
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-lg">Policy #{policy.policyNumber}</CardTitle>
-                          <Badge variant={policy.paid ? "default" : "destructive"} className="flex items-center gap-1">
-                            {policy.paid ? <CheckCircle className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
-                            {policy.paid ? "Paid" : "Unpaid"}
-                          </Badge>
-                        </div>
-                      </CardHeader>
-
-                      <CardContent className="space-y-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <p className="text-muted-foreground">Vehicle</p>
-                            <p className="font-medium text-foreground">
-                              {policy.vehicle.regNo} - {policy.vehicle.make} {policy.vehicle.model}
-                            </p>
-                          </div>
-
-                          <div>
-                            <p className="text-muted-foreground">Insurance Class</p>
-                            <p className="font-medium text-foreground">{policy.insuranceClass}</p>
-                          </div>
-
-                          <div>
-                            <p className="text-muted-foreground">Coverage Period</p>
-                            <p className="font-medium text-foreground">
-                              {new Date(policy.startDate).toLocaleDateString()} -{" "}
-                              {new Date(policy.endDate).toLocaleDateString()}
-                            </p>
-                          </div>
-
-                          <div>
-                            <p className="text-muted-foreground">Premium</p>
-                            <p className="font-medium text-foreground">KES {policy.price.toLocaleString()}</p>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap gap-2 pt-4 border-t">
-                          <Button size="sm" asChild>
-                            <Link href={policy.document} target="_blank">
-                              <Download className="w-4 h-4 mr-2" />
-                              Download Policy
-                            </Link>
-                          </Button>
-
-                          <Button size="sm" variant="outline">
-                            <Eye className="w-4 h-4 mr-2" />
-                            View Details
-                          </Button>
-
-                          <Button size="sm" variant="outline" disabled>
-                            <RotateCcw className="w-4 h-4 mr-2" />
-                            Renew Policy
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <SingleDashboardPolicy key={policy._id} policy={policy} />
                   ))}
                 </div>
               ) : (
@@ -250,28 +178,28 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
                 <div>
                   <p className="text-muted-foreground">Name</p>
-                  <p className="font-medium text-foreground">{userData.name}</p>
+                  <p className="font-medium text-foreground">{user?.name}</p>
                 </div>
-                <div>
+                {/* <div>
                   <p className="text-muted-foreground">Phone</p>
                   <p className="font-medium text-foreground">{userData.phone}</p>
-                </div>
+                </div> */}
                 <div>
                   <p className="text-muted-foreground">Email</p>
-                  <p className="font-medium text-foreground">{userData.email}</p>
+                  <p className="font-medium text-foreground">{user?.email}</p>
                 </div>
-                <div>
+                {/* <div>
                   <p className="text-muted-foreground">ID Number</p>
                   <p className="font-medium text-foreground">{userData.idNumber}</p>
-                </div>
-                <div>
+                </div> */}
+                {/* <div>
                   <p className="text-muted-foreground">KRA PIN</p>
                   <p className="font-medium text-foreground">{userData.kraPin}</p>
-                </div>
-                <div>
+                </div> */}
+                {/* <div>
                   <p className="text-muted-foreground">Address</p>
                   <p className="font-medium text-foreground">{userData.address}</p>
-                </div>
+                </div> */}
               </div>
             </CardContent>
           </Card>

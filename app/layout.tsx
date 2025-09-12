@@ -4,8 +4,8 @@ import { Manrope } from "next/font/google"
 import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
-import { AuthProvider } from "@/components/auth-context"
 import "./globals.css"
+import Providers from "@/components/providers"
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -35,9 +35,9 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body className={`font-sans ${manrope.variable} ${GeistMono.variable}`}>
-        <AuthProvider>
+        <Providers>
           <Suspense fallback={null}>{children}</Suspense>
-        </AuthProvider>
+        </Providers>
         <Analytics />
       </body>
     </html>
