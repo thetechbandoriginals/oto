@@ -5,11 +5,17 @@ import Link from "next/link"
 import Image from "next/image"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useAuth } from "@/components/auth-context"
+import useClientUser from "@/hooks/useClientUser"
+import { signOut } from "next-auth/react"
 
 export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const { user, logout } = useAuth()
+
+  const user = useClientUser();
+
+  const logout = () => {
+    signOut({ callbackUrl: '/login' })
+  }
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-border">

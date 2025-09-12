@@ -3,16 +3,24 @@
 import type React from "react"
 import Image from "next/image"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { useAuth } from "@/components/auth-context"
 import { Eye, EyeOff, ArrowLeft } from "lucide-react"
+import { axiosHandler } from "@/hooks/useAxios"
+import { signIn } from "next-auth/react"
+import { useSnackbar } from "notistack"
 
 export default function LoginPage() {
+
+  const { enqueueSnackbar } = useSnackbar();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+
+  const [isLoading, setIsLoading] = useState(false)
   const [isLogin, setIsLogin] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
@@ -22,28 +30,30 @@ export default function LoginPage() {
   })
   const [error, setError] = useState("")
 
-  const { login, register, isLoading } = useAuth()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
-
     try {
-      let success = false
-      if (isLogin) {
-        success = await login(formData.email, formData.password)
-      } else {
-        success = await register(formData.name, formData.email, formData.password)
+      setIsLoading(true);
+      if (!isLogin) {
+        const request = axiosHandler();
+        await request({
+          method: 'post',
+          path: '/auth/register',
+          pathData: formData,
+        })
       }
-
-      if (success) {
-        router.push("/dashboard")
-      } else {
-        setError(isLogin ? "Invalid email or password" : "Registration failed. Please try again.")
-      }
-    } catch (err) {
-      setError("Something went wrong. Please try again.")
+      const response = await signIn('credentials', { ...formData, redirect: false, });
+      if (!response || !response?.ok) throw new Error('Please check your credentials and try again')
+      else enqueueSnackbar(isLogin ? 'Login Successfull' : 'Welcome To OTO AutoHub', { variant: 'success' });
+      router.replace(callbackUrl)
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.content || error.message || error || 'Something went wrong';
+      setError(errorMessage)
+    } finally {
+      setIsLoading(false)
     }
   }
 

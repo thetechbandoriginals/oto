@@ -1,0 +1,1 @@
+export const PERCENTAGE_PRICE_INCREASE = 10;
