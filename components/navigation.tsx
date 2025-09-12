@@ -28,11 +28,14 @@ export function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="#contact" className="text-foreground hover:text-primary transition-colors">
+            <Link href="/help" className="text-foreground hover:text-primary transition-colors">
               Need Help?
             </Link>
             {user ? (
-              <>
+              <div className="flex items-center space-x-2">
+                <Button asChild className="bg-primary text-white hover:bg-primary/90">
+                  <Link href="/dashboard">Dashboard</Link>
+                </Button>
                 <Button
                   variant="outline"
                   onClick={logout}
@@ -40,10 +43,7 @@ export function Navigation() {
                 >
                   Logout
                 </Button>
-                <Button asChild className="bg-primary text-white hover:bg-primary/90">
-                  <Link href="/dashboard">Dashboard</Link>
-                </Button>
-              </>
+              </div>
             ) : (
               <div className="flex items-center space-x-2">
                 <Button
@@ -76,14 +76,19 @@ export function Navigation() {
           <div className="md:hidden py-4 border-t border-border">
             <div className="flex flex-col space-y-4">
               <Link
-                href="#contact"
+                href="/help"
                 className="text-foreground hover:text-primary transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Need Help?
               </Link>
               {user ? (
-                <>
+                <div className="flex flex-col space-y-2">
+                  <Button asChild className="bg-primary text-white hover:bg-primary/90 w-fit">
+                    <Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>
+                      Dashboard
+                    </Link>
+                  </Button>
                   <Button
                     variant="outline"
                     onClick={() => {
@@ -94,12 +99,7 @@ export function Navigation() {
                   >
                     Logout
                   </Button>
-                  <Button asChild className="bg-primary text-white hover:bg-primary/90 w-fit">
-                    <Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>
-                      Dashboard
-                    </Link>
-                  </Button>
-                </>
+                </div>
               ) : (
                 <div className="flex flex-col space-y-2">
                   <Button

@@ -20,12 +20,12 @@ export default function HomePage() {
                 <span className="text-primary">3 Simple Steps</span>
               </h1>
               <p className="text-sm md:text-base text-muted-foreground leading-relaxed text-pretty max-w-4xl mx-auto">
-                Your Details, Vehicle Details, Choose Insurance then Pay via M-Pesa Fast & Secure
+                Enter Your Details, Vehicle Details, Choose Insurance then Pay via M-Pesa. Already have an account?<Link href='/login' className="underline text-primary"> Log In</Link>. Or Continue with the form below.
               </p>
             </div>
 
             {/* Form - Now below title and description */}
-            <div className="w-[80%]">
+            <div className="w-full md:w-[80%]">
               <InsuranceForm />
             </div>
           </div>
@@ -34,7 +34,7 @@ export default function HomePage() {
 
       <section className="py-20 bg-primary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-white mb-16">Why Choose OTO?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-white mb-16">Why Choose Oto?</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="text-center border-2 border-white hover:border-white/80 transition-colors bg-transparent">
@@ -83,7 +83,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-left">
             {/* Section 1: Logo and Tagline */}
             <div className="space-y-4">
-              <Image src="/oto-logo.png" alt="OTO Logo" width={112} height={45} className="h-10 w-auto" priority />
+              <Image src="/oto-logo.png" alt="Oto Logo" width={112} height={45} className="h-10 w-auto" priority />
               <p className="text-sm text-muted-foreground">
                 Fast, secure car insurance for Kenya. Get covered in minutes.
               </p>
@@ -93,14 +93,17 @@ export default function HomePage() {
             <div className="space-y-4">
               <h4 className="font-semibold text-foreground">Help</h4>
               <div className="space-y-2">
-                <Link href="#" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link href="/help" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
                   Need Help?
                 </Link>
-                <Link href="#" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="/help#faqs"
+                  className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   FAQs
                 </Link>
                 <Link
-                  href="#contact"
+                  href="/contact"
                   className="block text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   Contacts
@@ -128,14 +131,20 @@ export default function HomePage() {
             <div className="space-y-4">
               <h4 className="font-semibold text-foreground">Links</h4>
               <div className="space-y-2">
-                <Link href="#" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="/privacy"
+                  className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Privacy Policy
                 </Link>
-                <Link href="#" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="/cookies"
+                  className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Cookie Notice
                 </Link>
               </div>
-              <p className="text-xs text-muted-foreground">© 2025 OTO.co.ke. All rights reserved.</p>
+              <p className="text-xs text-muted-foreground">© 2025 www.oto.co.ke. All rights reserved.</p>
             </div>
           </div>
         </div>
