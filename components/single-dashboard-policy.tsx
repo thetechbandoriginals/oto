@@ -58,12 +58,11 @@ const SingleDashboardPolicy = ({ policy }: SINGLE_DASHBOARD_POLICY_PROPS) => {
 
         <div className="flex flex-wrap gap-2 pt-4 border-t">
             {!policy.policy.paid && (
-            <PayIssueDialog 
-                policy={policy}
-                onClose={() => setPayOpen(false)}
-                open={payOpen}
-            >
-            </PayIssueDialog>
+                <PayIssueDialog 
+                    policy={policy}
+                    onClose={() => setPayOpen(false)}
+                    open={payOpen}
+                />
             )}
 
             <Button 

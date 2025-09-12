@@ -2,10 +2,10 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { useAuth } from "@/components/auth-context"
+import useClientUser from "@/hooks/useClientUser"
 
 export function GetStartedButton() {
-  const { user } = useAuth()
+  const user = useClientUser()
 
   if (user) {
     return (
