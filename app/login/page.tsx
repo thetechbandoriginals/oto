@@ -165,6 +165,7 @@ export default function LoginPage() {
               <p className="text-sm text-muted-foreground">
                 {isLogin ? "Don't have an account?" : "Already have an account?"}
                 <Button
+                  type="button"
                   variant="link"
                   className="text-primary hover:text-primary/80 p-0 ml-1 h-auto font-semibold"
                   onClick={() => {
