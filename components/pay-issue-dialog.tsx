@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { CreditCard, Shield, AlertTriangle, CheckCircle, Loader2 } from "lucide-react"
 import { POLICY } from "@/utils/types"
@@ -30,6 +30,7 @@ export default function PayIssueDialog({ policy, onClose, open }: PayIssueDialog
 
   const [processingState, setProcessingState] = useState<ProcessingState>('idle')
   const [errorMessage, setErrorMessage] = useState('');
+  const [existingPolicy, setExistingPolicy] = useState<any>(null);
 
   const initializePayment = usePaystackPayment({ 
     publicKey: PAYSTACK_PUBLIC_KEY || '',
@@ -61,7 +62,10 @@ export default function PayIssueDialog({ policy, onClose, open }: PayIssueDialog
 
   const validateDoubleInsurance = async () => {
     const response = await axios.post(`${INSUREPAL_API}/auth/validate-double-insurance`, { policy: policy.policy._id });
-    if (response.data.error) throw new Error(response.data.message || 'Double insurance validation failed');
+    if (response.data.error) {
+      setExistingPolicy(response.data.data);
+      throw new Error(response.data.message || 'Double insurance validation failed')
+    };
     setProcessingState('processing-payment')
     initializePayment({
       config: {
@@ -95,6 +99,12 @@ export default function PayIssueDialog({ policy, onClose, open }: PayIssueDialog
       setErrorMessage('')
     }
   }
+
+  useEffect(() => {
+    if (processingState !== 'error') {
+      setExistingPolicy(null);
+    }
+  }, [processingState])
 
   const getProcessingContent = () => {
     switch (processingState) {
@@ -142,9 +152,19 @@ export default function PayIssueDialog({ policy, onClose, open }: PayIssueDialog
         return (
           <div className="flex items-center gap-3 p-4 bg-red-50 rounded-lg">
             <AlertTriangle className="w-5 h-5 text-red-600" />
-            <div>
-              <p className="font-medium text-red-900">Payment Failed</p>
-              <p className="text-sm text-red-700">{errorMessage}</p>
+            <div className="flex flex-col gap-3">
+              <div>
+                <p className="font-medium text-red-900">Payment Failed</p>
+                <p className="text-sm text-red-700">{errorMessage}</p>
+              </div>
+              <div>
+                <p className="text-center font-medium mb-2 underline">Existing Policy</p>
+                <p className="text-sm">End Date: <span className="font-bold">{existingPolicy?.CoverEndDate}</span></p>
+                <p className="text-sm">Insurance Certificate Number: <span className="font-bold">{existingPolicy?.InsuranceCertificateNo}</span></p>
+                <p className="text-sm">Company: <span className="font-bold">{existingPolicy?.MemberCompanyName}</span></p>
+                <p className="text-sm">Registration Number: <span className="font-bold">{existingPolicy?.RegistrationNumber}</span></p>
+                <p className="text-sm">Chasis Number: <span className="font-bold">{existingPolicy?.ChassisNumber}</span></p>
+              </div>
             </div>
           </div>
         )
